@@ -1,0 +1,28 @@
+# Node and environment files
+node_modules/
+.env
+
+# Logs and temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Coverage / build
+coverage/
+dist/
+build/
+
+# Local server data (do not commit secrets)
+auth_system/server/data/api-keys.json
+auth_system/server/include/users.json
+
+# Cache
+.cache/
+

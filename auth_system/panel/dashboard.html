@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Multi-Auth System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/modern-styles.css">
+    <link rel="stylesheet" href="css/cheat-theme.css">
+    <link rel="stylesheet" href="css/cheat-theme.css">
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+        <div class="loading-text">LOADING...</div>
+    </div>
+
+    <!-- Notifications Container -->
+    <div class="notifications-container"></div>
+    
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar glass-card">
+            <div class="logo-container">
+                <div class="gear-container"></div>
+                <div class="logo-text">Multi-Auth</div>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="#" class="active" data-section="dashboard-section"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#" data-section="keys-section"><i class="fas fa-key"></i> License Keys</a></li>
+                    <li><a href="#" data-section="users-section"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="#" data-section="bans-section"><i class="fas fa-ban"></i> Bans</a></li>
+                    <li><a href="#" data-section="logs-section"><i class="fas fa-history"></i> Logs</a></li>
+                    <li><a href="connect-auth.html"><i class="fas fa-plug"></i> Integration</a></li>
+                    <li><a href="#" data-section="settings-section"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>DASHBOARD</h1>
+                <div class="user-info">
+                    <div class="user-info-toggle">
+                        <img src="https://via.placeholder.com/30" alt="User">
+                        <span id="username-display">Admin</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="user-dropdown">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section active">
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>TOTAL USERS</h3>
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-value">248</div>
+                        <div class="card-label">Registered users</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>ACTIVE KEYS</h3>
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="card-value">187</div>
+                        <div class="card-label">Currently active</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>BANNED USERS</h3>
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                        <div class="card-value">12</div>
+                        <div class="card-label">Permanently banned</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>TOTAL REVENUE</h3>
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-value">$15,840</div>
+                        <div class="card-label">All time</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="table-container">
+                    <h2>RECENT ACTIVITY</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>USERNAME</th>
+                                <th>ACTION</th>
+                                <th>TIMESTAMP</th>
+                                <th>IP ADDRESS</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activity-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Recent Login Attempts Table -->
+                <div class="table-container">
+                    <h2>RECENT LOGIN ATTEMPTS</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>USERNAME</th>
+                                <th>DATE & TIME</th>
+                                <th>IP ADDRESS</th>
+                                <th>HWID</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- License Keys Section -->
+            <div id="keys-section" class="content-section">
+                <div class="section-header">
+                    <h2>LICENSE KEYS</h2>
+                    <button class="action-btn" id="generate-key-btn"><i class="fas fa-plus"></i> GENERATE KEYS</button>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" id="key-search" placeholder="Search by key, username, or HWID...">
+                    <button class="action-btn" id="search-key-btn"><i class="fas fa-search"></i> SEARCH</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>LICENSE KEY</th>
+                                <th>USERNAME</th>
+                                <th>GAME</th>
+                                <th>DURATION</th>
+                                <th>CREATED</th>
+                                <th>EXPIRES</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keys-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Users Section -->
+            <div id="users-section" class="content-section">
+                <div class="section-header">
+                    <h2>USERS</h2>
+                    <button class="action-btn" id="add-user-btn"><i class="fas fa-plus"></i> ADD USER</button>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" id="user-search" placeholder="Search by username, email, or HWID...">
+                    <button class="action-btn" id="search-user-btn"><i class="fas fa-search"></i> SEARCH</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>USERNAME</th>
+                                <th>EMAIL</th>
+                                <th>REGISTRATION DATE</th>
+                                <th>LAST LOGIN</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Bans Section -->
+            <div id="bans-section" class="content-section">
+                <div class="section-header">
+                    <h2>BANNED USERS</h2>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>USERNAME</th>
+                                <th>REASON</th>
+                                <th>BAN DATE</th>
+                                <th>BANNED BY</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bans-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Logs Section -->
+            <div id="logs-section" class="content-section">
+                <div class="section-header">
+                    <h2>SYSTEM LOGS</h2>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" id="log-search" placeholder="Search logs...">
+                    <button class="action-btn" id="search-log-btn"><i class="fas fa-search"></i> SEARCH</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>TIMESTAMP</th>
+                                <th>USER</th>
+                                <th>ACTION</th>
+                                <th>IP ADDRESS</th>
+                                <th>DETAILS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Settings Section -->
+            <div id="settings-section" class="content-section">
+                <div class="section-header">
+                    <h2>SYSTEM SETTINGS</h2>
+                </div>
+                
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>API SETTINGS</h3>
+                        <div class="form-group">
+                            <label for="api-key">API KEY</label>
+                            <div class="api-key-container">
+                                <input type="text" id="api-key" value="****************************************" readonly>
+                                <button class="action-btn small" id="regenerate-api-key"><i class="fas fa-sync"></i> REGENERATE</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="api-rate-limit">RATE LIMIT (REQUESTS/MIN)</label>
+                            <input type="number" id="api-rate-limit" value="60">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>SECURITY SETTINGS</h3>
+                        <div class="form-group">
+                            <label for="max-login-attempts">MAX LOGIN ATTEMPTS</label>
+                            <input type="number" id="max-login-attempts" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="lockout-time">ACCOUNT LOCKOUT TIME (MINUTES)</label>
+                            <input type="number" id="lockout-time" value="30">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-header">
+                    <h2>ADMIN ACCOUNT</h2>
+                </div>
+                
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>CHANGE PASSWORD</h3>
+                        <div class="form-group">
+                            <label for="current-password">CURRENT PASSWORD</label>
+                            <input type="password" id="current-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">NEW PASSWORD</label>
+                            <input type="password" id="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">CONFIRM NEW PASSWORD</label>
+                            <input type="password" id="confirm-password">
+                        </div>
+                        <button class="action-btn" id="change-password-btn">UPDATE PASSWORD</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keys Section -->
+            <div id="keys-section" class="content-section">
+                <div class="section-header">
+                    <h2>LICENSE KEY MANAGEMENT</h2>
+                    <button class="action-btn" id="generate-key-btn"><i class="fas fa-plus"></i> Generate New Key</button>
+                </div>
+
+                <!-- Key Search -->
+                <div class="search-container">
+                    <input type="text" id="key-search" placeholder="Search by key, username, or HWID...">
+                    <button class="action-btn" id="search-key-btn"><i class="fas fa-search"></i> Search</button>
+                </div>
+
+                <!-- Keys Table -->
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>LICENSE KEY</th>
+                                <th>USER</th>
+                                <th>GAME TYPE</th>
+                                <th>DURATION</th>
+                                <th>CREATED</th>
+                                <th>EXPIRES</th>
+                                <th>HWID</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keys-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users-section" class="content-section">
+                <div class="section-header">
+                    <h2>USER MANAGEMENT</h2>
+                    <button class="action-btn" id="add-user-btn"><i class="fas fa-plus"></i> Add New User</button>
+                </div>
+
+                <!-- User Search -->
+                <div class="search-container">
+                    <input type="text" id="user-search" placeholder="Search users...">
+                    <button class="action-btn" id="search-user-btn"><i class="fas fa-search"></i> Search</button>
+                </div>
+
+                <!-- Users Table -->
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>USERNAME</th>
+                                <th>EMAIL</th>
+                                <th>REGISTRATION DATE</th>
+                                <th>LAST LOGIN</th>
+                                <th>SUBSCRIPTION</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-users-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bans Section -->
+            <div id="bans-section" class="content-section">
+                <div class="section-header">
+                    <h2>BAN MANAGEMENT</h2>
+                </div>
+
+                <!-- Banned Users Table -->
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>USERNAME</th>
+                                <th>HWID</th>
+                                <th>IP ADDRESS</th>
+                                <th>BAN DATE</th>
+                                <th>REASON</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bans-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Logs Section -->
+            <div id="logs-section" class="content-section">
+                <div class="section-header">
+                    <h2>ACTIVITY LOGS</h2>
+                </div>
+
+                <!-- Logs Table -->
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>TIMESTAMP</th>
+                                <th>USER</th>
+                                <th>ACTION</th>
+                                <th>IP ADDRESS</th>
+                                <th>HWID</th>
+                                <th>DETAILS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activity-logs-table-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="content-section">
+                <div class="section-header">
+                    <h2>SYSTEM SETTINGS</h2>
+                </div>
+
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>Security Settings</h3>
+                        <div class="form-group">
+                            <label for="max-login-attempts">Max Login Attempts</label>
+                            <input type="number" id="max-login-attempts" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="token-expiry">Token Expiry (hours)</label>
+                            <input type="number" id="token-expiry" value="24">
+                        </div>
+                        <div class="form-group">
+                            <label for="hwid-lock">HWID Lock</label>
+                            <select id="hwid-lock">
+                                <option value="strict">Strict (No Changes Allowed)</option>
+                                <option value="moderate">Moderate (Allow 1 Reset)</option>
+                                <option value="flexible">Flexible (Allow Multiple Resets)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>API Settings</h3>
+                        <div class="form-group">
+                            <label for="api-rate-limit">Rate Limit (requests/minute)</label>
+                            <input type="number" id="api-rate-limit" value="60">
+                        </div>
+                        <div class="form-group">
+                            <label for="api-key">API Key</label>
+                            <div class="api-key-container">
+                                <input type="text" id="api-key" value="sk_live_51NzQjKJHGkOh3LxVMIuIuIuIuIuIuIuIuIuIu" readonly>
+                                <button class="action-btn" id="regenerate-api-key"><i class="fas fa-sync"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="action-btn" id="save-settings">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal" id="add-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ADD NEW USER</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="new-username">Username</label>
+                    <input type="text" id="new-username">
+                </div>
+                <div class="form-group">
+                    <label for="new-email">Email</label>
+                    <input type="email" id="new-email">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Password</label>
+                    <input type="password" id="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="new-role">Role</label>
+                    <select id="new-role">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" id="cancel-add-user">Cancel</button>
+                <button class="action-btn" id="confirm-add-user">Add User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate Key Modal -->
+    <div class="modal" id="generate-key-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>GENERATE LICENSE KEY</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="key-username">Username (optional)</label>
+                    <input type="text" id="key-username">
+                </div>
+                <div class="form-group">
+                    <label for="key-game-type">Game Type</label>
+                    <select id="key-game-type">
+                        <option value="rust">Rust</option>
+                        <option value="fortnite">Fortnite</option>
+                        <option value="csgo">CS:GO</option>
+                        <option value="valorant">Valorant</option>
+                        <option value="apex">Apex Legends</option>
+                        <option value="warzone">Warzone</option>
+                        <option value="multi">Multi-Game</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="key-duration">Duration</label>
+                    <select id="key-duration">
+                        <option value="3d">3 Days</option>
+                        <option value="1w">1 Week</option>
+                        <option value="1m">1 Month</option>
+                        <option value="3m">3 Months</option>
+                        <option value="6m">6 Months</option>
+                        <option value="1y">1 Year</option>
+                        <option value="lifetime">Lifetime</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="key-quantity">Quantity</label>
+                    <input type="number" id="key-quantity" value="1" min="1" max="100">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" id="cancel-generate-key">Cancel</button>
+                <button class="action-btn" id="confirm-generate-key">Generate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HWID Reset Modal -->
+    <div class="modal" id="hwid-reset-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>RESET HWID</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset the HWID for this license key?</p>
+                <p>Current HWID: <span id="current-hwid">ABC123DEF456</span></p>
+                <div class="form-group">
+                    <label for="reset-reason">Reason for Reset</label>
+                    <textarea id="reset-reason" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" id="cancel-hwid-reset">Cancel</button>
+                <button class="action-btn" id="confirm-hwid-reset">Reset HWID</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Generate Key Modal -->
+    <div class="modal" id="generate-key-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>GENERATE LICENSE KEYS</h2>
+                <button class="modal-close" id="close-generate-key-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="key-game">GAME TYPE</label>
+                    <select id="key-game">
+                        <option value="rust">Rust</option>
+                        <option value="fortnite">Fortnite</option>
+                        <option value="csgo">CS:GO</option>
+                        <option value="valorant">Valorant</option>
+                        <option value="apex">Apex Legends</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="key-duration">DURATION</label>
+                    <select id="key-duration">
+                        <option value="3d">3 Days</option>
+                        <option value="7d">1 Week</option>
+                        <option value="30d">1 Month</option>
+                        <option value="90d">3 Months</option>
+                        <option value="365d">1 Year</option>
+                        <option value="lifetime">Lifetime</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="key-quantity">QUANTITY</label>
+                    <input type="number" id="key-quantity" value="1" min="1" max="100">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" id="confirm-generate-key">GENERATE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal" id="add-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ADD NEW USER</h2>
+                <button class="modal-close" id="close-add-user-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="new-username">USERNAME</label>
+                    <input type="text" id="new-username">
+                </div>
+                <div class="form-group">
+                    <label for="new-email">EMAIL</label>
+                    <input type="email" id="new-email">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">PASSWORD</label>
+                    <input type="password" id="new-password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" id="confirm-add-user">ADD USER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset HWID Modal -->
+    <div class="modal" id="reset-hwid-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>RESET HWID</h2>
+                <button class="modal-close" id="close-reset-hwid-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset the HWID for this license key?</p>
+                <p>Current key: <span id="reset-hwid-key"></span></p>
+                <p>Current HWID: <span id="current-hwid"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn danger" id="confirm-reset-hwid">RESET HWID</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/security.js"></script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Multi-Auth System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+        <div class="loading-text">LOADING...</div>
+    </div>
+
+    <!-- Notifications Container -->
+    <div class="notifications-container"></div>
+    
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar glass-card">
+            <div class="logo-container">
+                <div class="gear-container"></div>
+                <div class="logo-text">Multi-Auth</div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="keys.html"><i class="fas fa-key"></i> License Keys</a></li>
+                    <li><a href="logs.html"><i class="fas fa-history"></i> Logs</a></li>
+                    <li class="active"><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="dashboard-header glass-card">
+                <div class="header-title">
+                    <h1><i class="fas fa-cog"></i> System Settings</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="user-info">
+                        <span>Welcome, <strong>Admin</strong></span>
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=8a2be2&color=fff" alt="Admin" class="user-avatar">
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content-wrapper">
+                <!-- Settings Navigation -->
+                <div class="settings-nav glass-card scroll-animate">
+                    <ul class="settings-tabs">
+                        <li class="active" data-tab="general"><i class="fas fa-sliders-h"></i> General</li>
+                        <li data-tab="security"><i class="fas fa-shield-alt"></i> Security</li>
+                        <li data-tab="api"><i class="fas fa-code"></i> API</li>
+                        <li data-tab="notifications"><i class="fas fa-bell"></i> Notifications</li>
+                        <li data-tab="backup"><i class="fas fa-database"></i> Backup</li>
+                        <li data-tab="appearance"><i class="fas fa-paint-brush"></i> Appearance</li>
+                    </ul>
+                </div>
+                
+                <!-- Settings Content -->
+                <div class="settings-content glass-card scroll-animate">
+                    <!-- General Settings -->
+                    <div class="settings-tab-content active" id="general-tab">
+                        <h2>General Settings</h2>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="siteName">Site Name</label>
+                                <input type="text" id="siteName" value="Multi-Auth System" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="siteDescription">Site Description</label>
+                                <textarea id="siteDescription" class="form-control">Advanced authentication system with multi-language support and HWID locking.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminEmail">Admin Email</label>
+                                <input type="email" id="adminEmail" value="admin@example.com" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="timezone">Timezone</label>
+                                <select id="timezone" class="form-control">
+                                    <option value="UTC">UTC</option>
+                                    <option value="EST" selected>Eastern Standard Time</option>
+                                    <option value="CST">Central Standard Time</option>
+                                    <option value="MST">Mountain Standard Time</option>
+                                    <option value="PST">Pacific Standard Time</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dateFormat">Date Format</label>
+                                <select id="dateFormat" class="form-control">
+                                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                    <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Maintenance Mode</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="maintenanceMode">
+                                    <label for="maintenanceMode"></label>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn-primary" id="saveGeneralBtn">Save Changes</button>
+                                <button class="btn-outline" id="resetGeneralBtn">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Settings -->
+                    <div class="settings-tab-content" id="security-tab">
+                        <h2>Security Settings</h2>
+                        <div class="settings-form">
+                            <div class="form-section">
+                                <h3>Login Security</h3>
+                                <div class="form-group">
+                                    <label for="maxLoginAttempts">Max Login Attempts</label>
+                                    <input type="number" id="maxLoginAttempts" value="5" min="1" max="10" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lockoutTime">Account Lockout Time (minutes)</label>
+                                    <input type="number" id="lockoutTime" value="30" min="5" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Two-Factor Authentication</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="twoFactorAuth" checked>
+                                        <label for="twoFactorAuth"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Force Strong Passwords</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="strongPasswords" checked>
+                                        <label for="strongPasswords"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>DDoS Protection</h3>
+                                <div class="form-group">
+                                    <label>Enable DDoS Protection</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="ddosProtection" checked>
+                                        <label for="ddosProtection"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rateLimit">Rate Limit (requests per minute)</label>
+                                    <input type="number" id="rateLimit" value="60" min="10" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ddosMode">Protection Mode</label>
+                                    <select id="ddosMode" class="form-control">
+                                        <option value="detect">Detect Only</option>
+                                        <option value="challenge" selected>Challenge Suspicious</option>
+                                        <option value="block">Block Suspicious</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>IP Whitelisting</label>
+                                    <textarea id="ipWhitelist" class="form-control" placeholder="Enter IP addresses, one per line">127.0.0.1
+192.168.1.1</textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>HWID Locking</h3>
+                                <div class="form-group">
+                                    <label>Enable HWID Lock</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="hwidLock" checked>
+                                        <label for="hwidLock"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hwidComponents">HWID Components</label>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="cpuId" checked>
+                                            <label for="cpuId">CPU ID</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="diskId" checked>
+                                            <label for="diskId">Disk Serial</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="macAddress" checked>
+                                            <label for="macAddress">MAC Address</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="motherboardId" checked>
+                                            <label for="motherboardId">Motherboard ID</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="maxHwidDevices">Max Devices per License</label>
+                                    <input type="number" id="maxHwidDevices" value="2" min="1" max="10" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="btn-primary" id="saveSecurityBtn">Save Changes</button>
+                                <button class="btn-outline" id="resetSecurityBtn">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- API Settings -->
+                    <div class="settings-tab-content" id="api-tab">
+                        <h2>API Settings</h2>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label>Enable API</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="enableApi" checked>
+                                    <label for="enableApi"></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="apiKey">API Key</label>
+                                <div class="input-with-button">
+                                    <input type="text" id="apiKey" value="sk_live_51NxKLpGjh7S8n1CgTZmQy2X9vBtZpQr" class="form-control" readonly>
+                                    <button class="btn-icon" id="regenerateApiKey"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="btn-icon" id="copyApiKey"><i class="fas fa-copy"></i></button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="apiRateLimit">API Rate Limit (requests per minute)</label>
+                                <input type="number" id="apiRateLimit" value="100" min="10" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Allowed Origins (CORS)</label>
+                                <textarea id="allowedOrigins" class="form-control" placeholder="Enter domains, one per line">https://example.com
+https://api.example.com</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>API Documentation</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="apiDocs" checked>
+                                    <label for="apiDocs"></label>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn-primary" id="saveApiBtn">Save Changes</button>
+                                <button class="btn-outline" id="resetApiBtn">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notification Settings -->
+                    <div class="settings-tab-content" id="notifications-tab">
+                        <h2>Notification Settings</h2>
+                        <div class="settings-form">
+                            <div class="form-section">
+                                <h3>Email Notifications</h3>
+                                <div class="form-group">
+                                    <label>Enable Email Notifications</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="emailNotifications" checked>
+                                        <label for="emailNotifications"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="smtpServer">SMTP Server</label>
+                                    <input type="text" id="smtpServer" value="smtp.example.com" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="smtpPort">SMTP Port</label>
+                                    <input type="number" id="smtpPort" value="587" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="smtpUser">SMTP Username</label>
+                                    <input type="text" id="smtpUser" value="notifications@example.com" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="smtpPassword">SMTP Password</label>
+                                    <input type="password" id="smtpPassword" value="••••••••••••" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Notification Events</h3>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="notifyNewUser" checked>
+                                        <label for="notifyNewUser">New User Registration</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="notifyFailedLogin" checked>
+                                        <label for="notifyFailedLogin">Failed Login Attempts</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="notifyKeyExpire" checked>
+                                        <label for="notifyKeyExpire">License Key Expiration</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="notifySystemUpdate">
+                                        <label for="notifySystemUpdate">System Updates</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="notifyDdosAttack" checked>
+                                        <label for="notifyDdosAttack">DDoS Attack Detection</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="btn-primary" id="saveNotificationsBtn">Save Changes</button>
+                                <button class="btn-outline" id="resetNotificationsBtn">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Backup Settings -->
+                    <div class="settings-tab-content" id="backup-tab">
+                        <h2>Backup & Restore</h2>
+                        <div class="settings-form">
+                            <div class="form-section">
+                                <h3>Automatic Backups</h3>
+                                <div class="form-group">
+                                    <label>Enable Automatic Backups</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="autoBackup" checked>
+                                        <label for="autoBackup"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="backupFrequency">Backup Frequency</label>
+                                    <select id="backupFrequency" class="form-control">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly" selected>Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="backupRetention">Backup Retention (days)</label>
+                                    <input type="number" id="backupRetention" value="30" min="1" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="backupStorage">Backup Storage</label>
+                                    <select id="backupStorage" class="form-control">
+                                        <option value="local" selected>Local Storage</option>
+                                        <option value="s3">Amazon S3</option>
+                                        <option value="dropbox">Dropbox</option>
+                                        <option value="google">Google Drive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Manual Backup</h3>
+                                <div class="form-group">
+                                    <label>Backup Components</label>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="backupDatabase" checked>
+                                            <label for="backupDatabase">Database</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="backupFiles" checked>
+                                            <label for="backupFiles">Files</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="backupSettings" checked>
+                                            <label for="backupSettings">Settings</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="backupLogs">
+                                            <label for="backupLogs">Logs</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="createBackupBtn"><i class="fas fa-download"></i> Create Backup</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Restore Backup</h3>
+                                <div class="form-group">
+                                    <label for="backupFile">Select Backup File</label>
+                                    <input type="file" id="backupFile" class="form-control">
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary danger" id="restoreBackupBtn"><i class="fas fa-upload"></i> Restore Backup</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Appearance Settings -->
+                    <div class="settings-tab-content" id="appearance-tab">
+                        <h2>Appearance Settings</h2>
+                        <div class="settings-form">
+                            <div class="form-section">
+                                <h3>Theme</h3>
+                                <div class="theme-options">
+                                    <div class="theme-option active" data-theme="dark">
+                                        <div class="theme-preview dark-theme"></div>
+                                        <span>Dark</span>
+                                    </div>
+                                    <div class="theme-option" data-theme="light">
+                                        <div class="theme-preview light-theme"></div>
+                                        <span>Light</span>
+                                    </div>
+                                    <div class="theme-option" data-theme="purple">
+                                        <div class="theme-preview purple-theme"></div>
+                                        <span>Purple</span>
+                                    </div>
+                                    <div class="theme-option" data-theme="blue">
+                                        <div class="theme-preview blue-theme"></div>
+                                        <span>Blue</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Customization</h3>
+                                <div class="form-group">
+                                    <label for="primaryColor">Primary Color</label>
+                                    <input type="color" id="primaryColor" value="#8a2be2" class="form-control color-picker">
+                                </div>
+                                <div class="form-group">
+                                    <label for="accentColor">Accent Color</label>
+                                    <input type="color" id="accentColor" value="#00bfff" class="form-control color-picker">
+                                </div>
+                                <div class="form-group">
+                                    <label>Glassmorphism Effect</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="glassmorphism" checked>
+                                        <label for="glassmorphism"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Animations</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="animations" checked>
+                                        <label for="animations"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="animationSpeed">Animation Speed</label>
+                                    <input type="range" id="animationSpeed" min="0.5" max="2" step="0.1" value="1" class="form-control range-slider">
+                                    <div class="range-labels">
+                                        <span>Slow</span>
+                                        <span>Normal</span>
+                                        <span>Fast</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Layout</h3>
+                                <div class="form-group">
+                                    <label for="sidebarPosition">Sidebar Position</label>
+                                    <select id="sidebarPosition" class="form-control">
+                                        <option value="left" selected>Left</option>
+                                        <option value="right">Right</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Compact Mode</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="compactMode">
+                                        <label for="compactMode"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="btn-primary" id="saveAppearanceBtn">Save Changes</button>
+                                <button class="btn-outline" id="resetAppearanceBtn">Reset to Default</button>
+                                <button class="btn-outline" id="previewAppearanceBtn">Preview</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/animations.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/security.js"></script>
+</body>
+</html>

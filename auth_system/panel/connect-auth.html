@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Integration - Multi-Auth Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/modern-styles.css">
+  <link rel="stylesheet" href="css/cheat-theme.css">
+</head>
+<body>
+  <!-- Preloader -->
+  <div class="preloader">
+    <div class="spinner">
+      <div class="double-bounce1"></div>
+      <div class="double-bounce2"></div>
+    </div>
+    <div class="loading-text">LOADING...</div>
+  </div>
+
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar glass-card">
+      <div class="logo-container">
+        <div class="gear-container"></div>
+        <div class="logo-text">Multi-Auth</div>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+          <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+          <li><a href="keys.html"><i class="fas fa-key"></i> License Keys</a></li>
+          <li><a href="logs.html"><i class="fas fa-history"></i> Logs</a></li>
+          <li class="active"><a href="connect-auth.html"><i class="fas fa-plug"></i> Integration</a></li>
+          <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header class="dashboard-header glass-card">
+        <div class="header-title">
+          <h1><i class="fas fa-plug"></i> Auth Integration</h1>
+        </div>
+      </header>
+
+      <div class="content-wrapper">
+        <div class="glass-card fade-in" style="padding:20px">
+          <h2 class="fade-in">Step-by-Step Integration</h2>
+          <p class="fade-in">Register, login (2FA), verify, and call protected endpoints using the panel API.</p>
+
+          <h3>1) Register</h3>
+<pre class="code-block"><code>fetch('/api/auth/register', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: 'you@example.com', password: 'StrongPass123!' })
+}).then(res => res.json()).then(console.log);
+</code></pre>
+
+          <h3>2) Login (sends 2FA)</h3>
+<pre class="code-block"><code>fetch('/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: 'you@example.com', password: 'StrongPass123!' })
+}).then(res => res.json()).then(console.log);
+</code></pre>
+          <p>Check your email for the 6-digit 2FA code (in dev, the server logs the code).</p>
+
+          <h3>3) Verify 2FA</h3>
+<pre class="code-block"><code>fetch('/api/auth/verify', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: 'you@example.com', code: '123456' })
+}).then(res => res.json()).then(data => {
+  if (data.success) {
+    localStorage.setItem('token', data.token);
+  }
+});
+</code></pre>
+
+          <h3>4) Use JWT for protected requests</h3>
+<pre class="code-block"><code>const token = localStorage.getItem('token');
+fetch('/api/licenses/validate', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+  body: JSON.stringify({ key: 'DEMO-KEY-123', hwid: 'ABC-123' })
+}).then(res => res.json()).then(console.log);
+</code></pre>
+
+          <h3>Notes</h3>
+          <ul>
+            <li>In production, set valid Supabase keys in <code>server/.env</code>.</li>
+            <li>Use HMAC request-signing headers documented in README for clients.</li>
+            <li>Keep your JWT secret secure; never expose tokens.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/animations.js"></script>
+  <script>
+    // Minimal logout handler for this page (no jQuery)
+    document.addEventListener('DOMContentLoaded', function() {
+      var logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e){ e.preventDefault(); localStorage.clear(); window.location.href = 'index.html'; });
+      }
+    });
+  </script>
+</body>
+</html>

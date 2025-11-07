@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status | Auth System</title>
+    <!-- Bootstrap CSS via CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Use stable Font Awesome to avoid font loading issues -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .status-card {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .status-operational {
+            border-left: 5px solid #00c851;
+        }
+        .status-degraded {
+            border-left: 5px solid #ffbb33;
+        }
+        .status-outage {
+            border-left: 5px solid #ff4444;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .indicator-operational {
+            background-color: #00c851;
+        }
+        .indicator-degraded {
+            background-color: #ffbb33;
+        }
+        .indicator-outage {
+            background-color: #ff4444;
+        }
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background-color: #e0e0e0;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+        }
+        .incident {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        .incident::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            right: -8px;
+            background-color: white;
+            border: 2px solid #ff4444;
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .left {
+            left: 0;
+        }
+        .right {
+            left: 50%;
+        }
+        .right::after {
+            left: -8px;
+        }
+        .incident-content {
+            padding: 15px;
+            background-color: white;
+            position: relative;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .status-summary {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .status-history-chart {
+            height: 40px;
+            display: flex;
+            margin-top: 10px;
+        }
+        .history-segment {
+            flex: 1;
+            height: 100%;
+            margin: 0 1px;
+        }
+        .segment-operational {
+            background-color: #00c851;
+        }
+        .segment-degraded {
+            background-color: #ffbb33;
+        }
+        .segment-outage {
+            background-color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Notifications Container -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+        <div id="notificationsContainer"></div>
+    </div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Auth System</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="keys.html"><i class="fas fa-key"></i> License Keys</a></li>
+                <li><a href="logs.html"><i class="fas fa-history"></i> Logs</a></li>
+                <li class="active"><a href="status.html"><i class="fas fa-signal"></i> System Status</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-danger w-100"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container-fluid">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h1><i class="fas fa-signal"></i> System Status</h1>
+                        <div class="status-summary" id="statusSummary">All Systems Operational</div>
+                    </div>
+                </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Current Status</h5>
+                        <div id="statusCards" class="row">
+                            <!-- Status cards will be dynamically inserted here -->
+                        </div>
+                        <hr class="my-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="card-title mb-0">Diagnostics (Admin)</h5>
+                            <div>
+                                <input type="password" id="adminSecretInput" class="form-control form-control-sm d-inline-block" placeholder="Admin Secret" style="width:220px">
+                                <button id="saveAdminSecretBtn" class="btn btn-sm btn-outline-primary ms-2">Save</button>
+                                <button id="loadDiagnosticsBtn" class="btn btn-sm btn-primary ms-2">Load Diagnostics</button>
+                                <div class="form-check form-switch d-inline-block ms-2">
+                                    <input class="form-check-input" type="checkbox" id="autoRefreshDiag">
+                                    <label class="form-check-label" for="autoRefreshDiag">Auto Refresh</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="diagnosticsContainer" class="mt-3">
+                            <!-- Diagnostics content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Past Incidents</h5>
+                                <div id="incidentsTimeline" class="timeline">
+                                    <!-- Incidents will be dynamically inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap Bundle via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Avoid local JS include that causes SSL errors in preview -->
+    <script>
+        // Auth fallback: minimal inline implementation to avoid external script errors
+        function checkAuth() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const username = localStorage.getItem('username');
+                if (!token || !username) {
+                    window.location.href = 'index.html';
+                    return false;
+                }
+                const origin = 'http://' + location.hostname + (location.port ? ':' + location.port : '');
+                fetch(origin + '/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }).then(r => r.json()).then(resp => {
+                    if (!resp || resp.success === false) {
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('username');
+                        localStorage.removeItem('userRole');
+                        window.location.href = 'index.html';
+                    }
+                }).catch(() => {
+                    window.location.href = 'index.html';
+                });
+                return true;
+            } catch (e) {
+                return true;
+            }
+        }
+        checkAuth();
+
+        // Show preloader
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const preloader = document.querySelector('.preloader');
+                if (preloader) preloader.style.display = 'none';
+            }, 300);
+        });
+
+        // Function to show notification
+        function showNotification(message, type = 'success') {
+            const id = Date.now();
+            const html = `
+                <div id="notification-${id}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            const container = document.getElementById('notificationsContainer');
+            if (container) {
+                container.insertAdjacentHTML('beforeend', html);
+                const toastEl = document.getElementById(`notification-${id}`);
+                if (toastEl && window.bootstrap && window.bootstrap.Toast) {
+                    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+                    toast.show();
+                }
+            }
+        }
+
+        // Function to get status class
+        function getStatusClass(status) {
+            switch(status) {
+                case 'operational': return 'status-operational';
+                case 'degraded': return 'status-degraded';
+                case 'outage': return 'status-outage';
+                default: return '';
+            }
+        }
+
+        // Function to get status indicator class
+        function getIndicatorClass(status) {
+            switch(status) {
+                case 'operational': return 'indicator-operational';
+                case 'degraded': return 'indicator-degraded';
+                case 'outage': return 'indicator-outage';
+                default: return '';
+            }
+        }
+
+        // Function to get status text
+        function getStatusText(status) {
+            switch(status) {
+                case 'operational': return 'Operational';
+                case 'degraded': return 'Degraded Performance';
+                case 'outage': return 'Service Outage';
+                default: return 'Unknown';
+            }
+        }
+
+        // Function to format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+
+        // Function to load system status (new format)
+        function serverOrigin() {
+            return 'http://' + location.hostname + (location.port ? ':' + location.port : '');
+        }
+
+        function loadSystemStatus() {
+            fetch(serverOrigin() + '/api/status')
+                .then(r => r.json())
+                .then(displaySystemStatus)
+                .catch(() => showNotification('Failed to connect to the server', 'danger'));
+        }
+
+        // Diagnostics rendering
+        function renderDiagnostics(data) {
+            const el = document.getElementById('diagnosticsContainer');
+            if (!el) return;
+            const mem = data.server.memory || {};
+            const sec = data.security || {};
+            const perf = data.performance || {};
+            const enc = data.encryption || {};
+            const cpu = data.server.cpu || {};
+            const uptime = data.server.uptime;
+            const fmtBytes = (n) => n ? Math.round(n / 1024 / 1024 * 100) / 100 + ' MB' : '—';
+            const fmtPct = (user, sys) => {
+                const total = (user||0) + (sys||0);
+                return total ? (Math.round(total/1000)/10 + '%') : '—';
+            };
+            const html = `
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card status-card">
+                            <div class="card-body">
+                                <h6 class="card-title">Server</h6>
+                                <div>Uptime: ${Math.round(uptime)}s</div>
+                                <div>CPU: ${fmtPct(cpu.user, cpu.system)}</div>
+                                <div>RSS: ${fmtBytes(mem.rss)}</div>
+                                <div>Heap Used: ${fmtBytes(mem.heapUsed)}</div>
+                                <div>Node: ${data.server.nodeVersion}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card status-card">
+                            <div class="card-body">
+                                <h6 class="card-title">Security</h6>
+                                <div>Blocked IPs: ${sec.stats ? sec.stats.totalBlocked : '—'}</div>
+                                <div>Suspicious: ${sec.stats ? sec.stats.totalSuspicious : '—'}</div>
+                                <div>Last Scan: ${sec.lastSecurityScan || '—'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card status-card">
+                            <div class="card-body">
+                                <h6 class="card-title">Performance</h6>
+                                <div>RPM: ${perf.requestsPerMinute || 0}</div>
+                                <div>Avg Resp: ${perf.averageResponseTime || '—'}</div>
+                                <div>Error Rate: ${perf.errorRate || '—'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card status-card">
+                            <div class="card-body">
+                                <h6 class="card-title">Encryption</h6>
+                                <div>Algo: ${enc.algorithm || '—'}</div>
+                                <div>Rotation: ${enc.keyRotation || '—'}</div>
+                                <div>Last Rot.: ${enc.lastKeyRotation || '—'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            el.innerHTML = html;
+        }
+
+        function loadDiagnostics() {
+            const secret = localStorage.getItem('adminSecret') || document.getElementById('adminSecretInput')?.value;
+            if (!secret) {
+                showNotification('Admin secret required', 'warning');
+                return;
+            }
+            fetch(serverOrigin() + '/api/status/diagnostics', { headers: { 'x-admin-secret': secret } })
+                .then(r => r.json())
+                .then(resp => {
+                    if (resp && resp.success) {
+                        renderDiagnostics(resp.data);
+                        showNotification('Diagnostics loaded', 'success');
+                    } else {
+                        showNotification('Failed to load diagnostics', 'danger');
+                    }
+                })
+                .catch(() => showNotification('Failed to connect to the server', 'danger'));
+        }
+
+        // Function to display system status
+        function displaySystemStatus(statusResponse) {
+            const statusCardsContainer = document.getElementById('statusCards');
+            if (!statusCardsContainer) return;
+            statusCardsContainer.innerHTML = '';
+            const components = statusResponse.components || [];
+            const overall = statusResponse.overall || 'unknown';
+            const updatedAt = statusResponse.updatedAt;
+
+            components.forEach(function(c) {
+                const statusClass = getStatusClass(c.status);
+                const indicatorClass = getIndicatorClass(c.status);
+                const statusText = getStatusText(c.status);
+
+                const details = [];
+                if (c.latencyMs !== undefined) details.push(`Latency: ${c.latencyMs}ms`);
+                if (c.error) details.push(`Note: ${c.error}`);
+
+                const card = `
+                    <div class="col-md-4 mb-3">
+                        <div class="card status-card ${statusClass}">
+                            <div class="card-body">
+                                <h5 class="card-title">${c.name}</h5>
+                                <p class="card-text">
+                                    <span class="status-indicator ${indicatorClass}"></span>
+                                    ${statusText}
+                                </p>
+                                <p class="card-text text-muted">Last updated: ${formatDate(updatedAt)}</p>
+                                ${details.length ? `<div class="status-history-chart" style="height:auto">${details.map(d => `<div>${d}</div>`).join('')}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                statusCardsContainer.insertAdjacentHTML('beforeend', card);
+            });
+
+            // Update status summary
+            const statusSummary = document.getElementById('statusSummary');
+            if (statusSummary) {
+                if (overall === 'operational') {
+                    statusSummary.textContent = 'All Systems Operational';
+                    statusSummary.classList.remove('text-warning', 'text-danger');
+                    statusSummary.classList.add('text-success');
+                } else if (overall === 'outage') {
+                    statusSummary.textContent = 'System Outage Detected';
+                    statusSummary.classList.remove('text-success', 'text-warning');
+                    statusSummary.classList.add('text-danger');
+                } else if (overall === 'degraded') {
+                    statusSummary.textContent = 'Degraded System Performance';
+                    statusSummary.classList.remove('text-success', 'text-danger');
+                    statusSummary.classList.add('text-warning');
+                } else {
+                    statusSummary.textContent = 'Status Unknown';
+                    statusSummary.classList.remove('text-success', 'text-warning');
+                    statusSummary.classList.add('text-danger');
+                }
+            }
+
+            // Load incidents
+            loadIncidents();
+        }
+
+        // Function to generate history chart
+        function generateHistoryChart(history) {
+            // Get last 30 entries or less
+            const recentHistory = history.slice(-30);
+            let chartHtml = '';
+
+            recentHistory.forEach(function(entry) {
+                const segmentClass = `segment-${entry.status}`;
+                chartHtml += `<div class="history-segment ${segmentClass}" title="${getStatusText(entry.status)} - ${formatDate(entry.timestamp)}"></div>`;
+            });
+
+            return chartHtml;
+        }
+
+        // Function to load incidents
+        function loadIncidents() {
+            fetch(serverOrigin() + '/api/status/incidents')
+                .then(r => r.json())
+                .then(response => {
+                    if (response.success) {
+                        displayIncidents(response.data);
+                    } else {
+                        showNotification('Failed to load incidents', 'danger');
+                    }
+                })
+                .catch(() => {
+                    showNotification('Failed to connect to the server', 'danger');
+                });
+        }
+
+        // Function to display incidents
+        function displayIncidents(incidents) {
+            const incidentsContainer = document.getElementById('incidentsTimeline');
+            if (!incidentsContainer) return;
+            incidentsContainer.innerHTML = '';
+
+            const dates = Object.keys(incidents).sort().reverse();
+
+            if (dates.length === 0) {
+                incidentsContainer.innerHTML = '<div class="text-center p-4">No incidents reported in the last 30 days.</div>';
+                return;
+            }
+
+            let isLeft = true;
+            dates.forEach(function(date) {
+                const dateIncidents = incidents[date];
+                const formattedDate = new Date(date).toLocaleDateString();
+                const h6 = document.createElement('h6');
+                h6.className = 'text-center mt-4 mb-3';
+                h6.textContent = formattedDate;
+                incidentsContainer.appendChild(h6);
+
+                dateIncidents.forEach(function(incident) {
+                    const side = isLeft ? 'left' : 'right';
+                    const incidentHtml = `
+                        <div class="incident ${side}">
+                            <div class="incident-content">
+                                <h5>${incident.service}</h5>
+                                <p>${incident.message}</p>
+                                <p class="text-muted">${formatDate(incident.timestamp)}</p>
+                            </div>
+                        </div>
+                    `;
+                    incidentsContainer.insertAdjacentHTML('beforeend', incidentHtml);
+                    isLeft = !isLeft;
+                });
+            });
+        }
+
+        // Load system status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load system status (new format)
+            fetch(serverOrigin() + '/api/status')
+                .then(r => r.json())
+                .then(displaySystemStatus)
+                .catch(() => showNotification('Failed to connect to the server', 'danger'));
+
+            // Refresh status every 60 seconds
+            setInterval(function() {
+                fetch(serverOrigin() + '/api/status')
+                    .then(r => r.json())
+                    .then(displaySystemStatus)
+                    .catch(() => {});
+            }, 60000);
+
+            // Prefill admin secret and bind events
+            const saved = localStorage.getItem('adminSecret');
+            const input = document.getElementById('adminSecretInput');
+            if (input && saved) input.value = saved;
+            const saveBtn = document.getElementById('saveAdminSecretBtn');
+            if (saveBtn) saveBtn.addEventListener('click', function() {
+                const val = input ? input.value : '';
+                if (val) {
+                    localStorage.setItem('adminSecret', val);
+                    showNotification('Admin secret saved', 'success');
+                }
+            });
+            const loadBtn = document.getElementById('loadDiagnosticsBtn');
+            if (loadBtn) loadBtn.addEventListener('click', loadDiagnostics);
+            const autoChk = document.getElementById('autoRefreshDiag');
+            if (autoChk) autoChk.addEventListener('change', function(e){
+                if (e.target.checked) {
+                    loadDiagnostics();
+                    window.__diagIntervalId = setInterval(loadDiagnostics, 10000);
+                } else {
+                    if (window.__diagIntervalId) { clearInterval(window.__diagIntervalId); window.__diagIntervalId = null; }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

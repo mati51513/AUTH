@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs - Multi-Auth System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+        <div class="loading-text">LOADING...</div>
+    </div>
+
+    <!-- Notifications Container -->
+    <div class="notifications-container"></div>
+    
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar glass-card">
+            <div class="logo-container">
+                <div class="gear-container"></div>
+                <div class="logo-text">Multi-Auth</div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="keys.html"><i class="fas fa-key"></i> License Keys</a></li>
+                    <li class="active"><a href="logs.html"><i class="fas fa-history"></i> Logs</a></li>
+                    <li><a href="connect-auth.html"><i class="fas fa-plug"></i> Integration</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="dashboard-header glass-card">
+                <div class="header-title">
+                    <h1><i class="fas fa-history"></i> System Logs</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="searchLogs" placeholder="Search logs...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="user-info">
+                        <span>Welcome, <strong>Admin</strong></span>
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=8a2be2&color=fff" alt="Admin" class="user-avatar">
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content-wrapper">
+                <!-- Log Filters -->
+                <div class="filters-container glass-card scroll-animate">
+                    <div class="filter-group">
+                        <label>Log Level:</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn error" data-filter="error">Error</button>
+                            <button class="filter-btn warning" data-filter="warning">Warning</button>
+                            <button class="filter-btn info" data-filter="info">Info</button>
+                            <button class="filter-btn success" data-filter="success">Success</button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Date Range:</label>
+                        <div class="date-inputs">
+                            <input type="date" id="startDate" class="date-input">
+                            <span>to</span>
+                            <input type="date" id="endDate" class="date-input">
+                            <button class="btn-primary btn-sm" id="applyDateFilter">Apply</button>
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn-outline" id="exportLogs"><i class="fas fa-download"></i> Export Logs</button>
+                        <button class="btn-outline danger" id="clearLogs"><i class="fas fa-trash"></i> Clear Logs</button>
+                    </div>
+                </div>
+                
+                <!-- Log Stats -->
+                <div class="stats-container scroll-animate">
+                    <div class="stats-card glass-card">
+                        <div class="stats-icon error">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3>Errors</h3>
+                            <p class="stats-number">24</p>
+                            <p class="stats-change negative">+3 <i class="fas fa-arrow-up"></i></p>
+                        </div>
+                    </div>
+                    <div class="stats-card glass-card">
+                        <div class="stats-icon warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3>Warnings</h3>
+                            <p class="stats-number">56</p>
+                            <p class="stats-change negative">+8 <i class="fas fa-arrow-up"></i></p>
+                        </div>
+                    </div>
+                    <div class="stats-card glass-card">
+                        <div class="stats-icon info">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3>Info</h3>
+                            <p class="stats-number">342</p>
+                            <p class="stats-change positive">Normal <i class="fas fa-check"></i></p>
+                        </div>
+                    </div>
+                    <div class="stats-card glass-card">
+                        <div class="stats-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3>Success</h3>
+                            <p class="stats-number">189</p>
+                            <p class="stats-change positive">+12% <i class="fas fa-arrow-up"></i></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Logs Table -->
+                <div class="table-container glass-card scroll-animate">
+                    <table class="data-table" id="logsTable">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-tag"></i> Level</th>
+                                <th><i class="fas fa-calendar"></i> Timestamp</th>
+                                <th><i class="fas fa-user"></i> User</th>
+                                <th><i class="fas fa-globe"></i> IP Address</th>
+                                <th><i class="fas fa-align-left"></i> Message</th>
+                                <th><i class="fas fa-cog"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fade-in">
+                                <td><span class="badge error">ERROR</span></td>
+                                <td>2023-06-15 14:32:45</td>
+                                <td>admin</td>
+                                <td>192.168.1.105</td>
+                                <td>Failed login attempt (5th consecutive failure)</td>
+                                <td>
+                                    <button class="btn-icon" data-action="view"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" data-action="delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="fade-in">
+                                <td><span class="badge warning">WARNING</span></td>
+                                <td>2023-06-15 14:28:12</td>
+                                <td>johndoe</td>
+                                <td>192.168.1.120</td>
+                                <td>License key about to expire in 3 days</td>
+                                <td>
+                                    <button class="btn-icon" data-action="view"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" data-action="delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="fade-in">
+                                <td><span class="badge info">INFO</span></td>
+                                <td>2023-06-15 14:25:30</td>
+                                <td>system</td>
+                                <td>127.0.0.1</td>
+                                <td>Database backup completed successfully</td>
+                                <td>
+                                    <button class="btn-icon" data-action="view"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" data-action="delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="fade-in">
+                                <td><span class="badge success">SUCCESS</span></td>
+                                <td>2023-06-15 14:20:18</td>
+                                <td>marksmith</td>
+                                <td>192.168.1.115</td>
+                                <td>User logged in successfully</td>
+                                <td>
+                                    <button class="btn-icon" data-action="view"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" data-action="delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="fade-in">
+                                <td><span class="badge error">ERROR</span></td>
+                                <td>2023-06-15 14:15:22</td>
+                                <td>janedoe</td>
+                                <td>192.168.1.118</td>
+                                <td>API rate limit exceeded</td>
+                                <td>
+                                    <button class="btn-icon" data-action="view"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" data-action="delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="fade-in">
+                                <td><span class="badge warning">WARNING</span></td>
+                                <td>2023-06-15 14:10:05</td>
+                                <td>system</td>
+                                <td>127.0.0.1</td>
+                                <td>High CPU usage detected (85%)</td>
+                                <td>
+                                    <button class="btn-icon" data-action="view"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" data-action="delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="fade-in">
+                                <td><span class="badge info">INFO</span></td>
+                                <td>2023-06-15 14:05:33</td>
+                                <td>admin</td>
+                                <td>192.168.1.105</td>
+                                <td>User settings updated</td>
+                                <td>
+                                    <button class="btn-icon" data-action="view"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" data-action="delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="fade-in">
+                                <td><span class="badge success">SUCCESS</span></td>
+                                <td>2023-06-15 14:00:12</td>
+                                <td>system</td>
+                                <td>127.0.0.1</td>
+                                <td>Scheduled maintenance completed</td>
+                                <td>
+                                    <button class="btn-icon" data-action="view"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" data-action="delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <button class="pagination-btn" disabled><i class="fas fa-angle-double-left"></i></button>
+                        <button class="pagination-btn" disabled><i class="fas fa-angle-left"></i></button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <button class="pagination-btn">4</button>
+                        <button class="pagination-btn">5</button>
+                        <button class="pagination-btn"><i class="fas fa-angle-right"></i></button>
+                        <button class="pagination-btn"><i class="fas fa-angle-double-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Detail Modal -->
+    <div class="modal" id="logDetailModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-alt"></i> Log Details</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="log-detail-container">
+                    <div class="log-detail-item">
+                        <span class="log-detail-label">Level:</span>
+                        <span class="log-detail-value" id="logLevel"><span class="badge error">ERROR</span></span>
+                    </div>
+                    <div class="log-detail-item">
+                        <span class="log-detail-label">Timestamp:</span>
+                        <span class="log-detail-value" id="logTimestamp">2023-06-15 14:32:45</span>
+                    </div>
+                    <div class="log-detail-item">
+                        <span class="log-detail-label">User:</span>
+                        <span class="log-detail-value" id="logUser">admin</span>
+                    </div>
+                    <div class="log-detail-item">
+                        <span class="log-detail-label">IP Address:</span>
+                        <span class="log-detail-value" id="logIP">192.168.1.105</span>
+                    </div>
+                    <div class="log-detail-item">
+                        <span class="log-detail-label">Message:</span>
+                        <span class="log-detail-value" id="logMessage">Failed login attempt (5th consecutive failure)</span>
+                    </div>
+                    <div class="log-detail-item">
+                        <span class="log-detail-label">Additional Data:</span>
+                        <pre class="log-detail-code" id="logData">
+{
+  "browser": "Chrome 114.0.5735.134",
+  "os": "Windows 10",
+  "previous_attempts": [
+    "2023-06-15 14:30:12",
+    "2023-06-15 14:30:45",
+    "2023-06-15 14:31:20",
+    "2023-06-15 14:32:05"
+  ],
+  "account_status": "locked",
+  "lock_duration": "30 minutes"
+}
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="downloadLogBtn"><i class="fas fa-download"></i> Download</button>
+                <button class="btn-outline danger" id="deleteLogBtn"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn-primary" id="closeLogBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this log entry? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="cancelDeleteBtn">Cancel</button>
+                <button class="btn-primary danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/animations.js"></script>
+    <script src="js/logs.js"></script>
+    <script src="js/security.js"></script>
+</body>
+</html>
